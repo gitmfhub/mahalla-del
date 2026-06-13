@@ -1,77 +1,548 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محله دِل - نظام إدارة العملاء</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>إدارة العملاء</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+
+      /* Light */
+      --bg:          #f5f6fa;
+      --surface:     #ffffff;
+      --surface2:    #f0f1f5;
+      --border:      #e2e4ea;
+      --text:        #1a1d2e;
+      --text-muted:  #6b7080;
+      --primary:     #4f6ef7;
+      --primary-dk:  #3a57e0;
+      --danger:      #e85050;
+      --success:     #2db87c;
+      --shadow:      rgba(0,0,0,0.08);
+      --radius:      14px;
+      --radius-sm:   8px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:         #0e1018;
+        --surface:    #181b27;
+        --surface2:   #1f2233;
+        --border:     #2a2e42;
+        --text:       #e8eaf2;
+        --text-muted: #7a7f9a;
+        --shadow:     rgba(0,0,0,0.35);
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      font-size: 15px;
+      line-height: 1.6;
+      transition: background .25s, color .25s;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 2px 12px var(--shadow);
+      padding: 0 16px;
+      height: 58px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .topbar-brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; }
+    .topbar-brand .icon { font-size: 22px; }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    .user-chip {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--surface2); border-radius: 50px;
+      padding: 5px 12px 5px 6px; font-size: 13px; color: var(--text-muted);
+    }
+    .user-chip .avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--primary); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+    }
+    .btn-logout {
+      background: none; border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text-muted); padding: 5px 12px; cursor: pointer; font-size: 13px;
+      transition: all .2s;
+    }
+    .btn-logout:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+    /* ── MAIN ── */
+    main { max-width: 900px; margin: 0 auto; padding: 20px 14px 40px; }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 20px var(--shadow);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-size: 16px; font-weight: 700; margin-bottom: 18px;
+      display: flex; align-items: center; gap: 8px; color: var(--text);
+    }
+    .card-title .badge {
+      font-size: 11px; font-weight: 600; padding: 2px 8px;
+      border-radius: 50px; background: var(--primary); color: #fff;
+    }
+
+    /* ── LOGIN ── */
+    #login-page {
+      min-height: 100dvh;
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+    }
+    .login-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 40px var(--shadow);
+      padding: 36px 28px;
+      width: 100%; max-width: 380px;
+    }
+    .login-logo { text-align: center; margin-bottom: 28px; }
+    .login-logo .emoji { font-size: 48px; display: block; margin-bottom: 10px; }
+    .login-logo h1 { font-size: 22px; font-weight: 800; }
+    .login-logo p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+    /* ── FORM INPUTS ── */
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-muted); }
+    .field input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      color: var(--text); font-size: 15px;
+      outline: none; transition: border .2s, box-shadow .2s;
+    }
+    .field input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79,110,247,.15);
+    }
+    .field input::placeholder { color: var(--text-muted); opacity: .7; }
+
+    /* ── BUTTONS ── */
+    .btn-primary {
+      width: 100%; padding: 12px; border: none; border-radius: var(--radius-sm);
+      background: var(--primary); color: #fff;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      transition: background .2s, transform .1s;
+    }
+    .btn-primary:hover { background: var(--primary-dk); }
+    .btn-primary:active { transform: scale(.98); }
+
+    .login-error {
+      background: rgba(232,80,80,.12); border: 1px solid rgba(232,80,80,.3);
+      border-radius: var(--radius-sm); padding: 10px 14px;
+      color: var(--danger); font-size: 13px; margin-bottom: 16px; display: none;
+    }
+
+    /* ── SEARCH ── */
+    .search-wrap { position: relative; margin-bottom: 0; }
+    .search-wrap .search-icon {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      right: 13px; font-size: 16px; pointer-events: none; color: var(--text-muted);
+    }
+    .search-wrap input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 40px 10px 14px;
+      color: var(--text); font-size: 15px;
+      outline: none; transition: border .2s, box-shadow .2s;
+    }
+    .search-wrap input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79,110,247,.15);
+    }
+    .search-count {
+      font-size: 12px; color: var(--text-muted); margin-top: 8px;
+    }
+
+    /* ── TABLE ── */
+    .table-scroll { overflow-x: auto; margin-top: 16px; border-radius: var(--radius-sm); }
+    table {
+      width: 100%; border-collapse: collapse; min-width: 540px;
+    }
+    thead tr { background: var(--surface2); }
+    thead th {
+      text-align: right; padding: 11px 14px;
+      font-size: 12px; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .04em;
+      border-bottom: 1px solid var(--border);
+    }
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background .15s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--surface2); }
+    tbody td { padding: 12px 14px; font-size: 14px; vertical-align: middle; }
+
+    .name-cell { display: flex; align-items: center; gap: 10px; }
+    .mini-avatar {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      background: var(--primary); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700;
+    }
+    .name-main { font-weight: 600; font-size: 14px; }
+    .name-sub  { font-size: 12px; color: var(--text-muted); }
+
+    .role-tag {
+      display: inline-block; padding: 2px 9px; border-radius: 50px;
+      font-size: 11px; font-weight: 700;
+    }
+    .role-admin    { background: rgba(79,110,247,.15); color: var(--primary); }
+    .role-customer { background: rgba(45,184,124,.15); color: var(--success); }
+
+    .no-results {
+      text-align: center; padding: 40px 20px;
+      color: var(--text-muted); font-size: 14px;
+    }
+    .no-results .emoji { font-size: 36px; display: block; margin-bottom: 10px; }
+
+    /* ── CUSTOMER PROFILE ── */
+    .profile-header {
+      display: flex; align-items: center; gap: 16px; margin-bottom: 20px;
+    }
+    .profile-avatar {
+      width: 68px; height: 68px; border-radius: 50%; flex-shrink: 0;
+      background: var(--primary); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; font-weight: 800;
+    }
+    .profile-name { font-size: 20px; font-weight: 800; }
+    .profile-id   { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .info-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+    }
+    .info-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+    .info-value { font-size: 15px; font-weight: 600; }
+
+    .stat-strip { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+    .stat-box {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 16px; text-align: center;
+    }
+    .stat-num { font-size: 26px; font-weight: 800; color: var(--primary); }
+    .stat-lbl { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+    /* ── HIDDEN ── */
+    .hidden { display: none !important; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 480px) {
+      .topbar-brand span.brand-text { display: none; }
+      .login-box { padding: 28px 18px; }
+      main { padding: 14px 10px 30px; }
+      .card { padding: 18px 14px; }
+      .profile-avatar { width: 54px; height: 54px; font-size: 20px; }
+      .profile-name { font-size: 17px; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="store-header">
-            <h1>🏪 محله دِل</h1>
-            <p>أهلاً بك في متجرك المفضل</p>
+
+<!-- ════════════════ LOGIN PAGE ════════════════ -->
+<div id="login-page">
+  <div class="login-box">
+    <div class="login-logo">
+      <span class="emoji">🚀</span>
+      <h1>إدارة العملاء</h1>
+      <p>سجّل دخولك للمتابعة</p>
+    </div>
+    <div class="login-error" id="login-error">اسم المستخدم أو كلمة المرور غير صحيحة</div>
+    <div class="field">
+      <label>اسم المستخدم (ID)</label>
+      <input type="text" id="login-id" placeholder="مثال: c001 أو admin" autocomplete="username" />
+    </div>
+    <div class="field">
+      <label>كلمة المرور</label>
+      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" />
+    </div>
+    <button class="btn-primary" onclick="doLogin()">دخول</button>
+  </div>
+</div>
+
+<!-- ════════════════ APP PAGE ════════════════ -->
+<div id="app-page" class="hidden">
+
+  <div class="topbar">
+    <div class="topbar-brand">
+      <span class="icon">🚀</span>
+      <span class="brand-text">إدارة العملاء</span>
+    </div>
+    <div class="topbar-right">
+      <div class="user-chip">
+        <div class="avatar" id="topbar-avatar">–</div>
+        <span id="topbar-name">–</span>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">خروج</button>
+    </div>
+  </div>
+
+  <main>
+
+    <!-- ADMIN: Search + Table -->
+    <div id="admin-view" class="hidden">
+      <div class="card">
+        <div class="card-title">
+          🔍 البحث الفوري
+          <span class="badge" id="admin-badge">أدمن</span>
         </div>
-
-        <div class="auth-card">
-            <div class="tabs">
-                <button class="tab-btn active" data-tab="login">دخول</button>
-                <button class="tab-btn" data-tab="register">تسجيل جديد</button>
-            </div>
-
-            <!-- نموذج الدخول -->
-            <div id="login-form" class="form-container active">
-                <h2>مرحباً بعودتك</h2>
-                <form id="login">
-                    <div class="input-group">
-                        <label>📧 البريد الإلكتروني</label>
-                        <input type="email" id="login-email" required placeholder="example@email.com">
-                    </div>
-                    <div class="input-group">
-                        <label>🔒 كلمة المرور</label>
-                        <input type="password" id="login-password" required placeholder="••••••••">
-                    </div>
-                    <button type="submit" class="btn-primary">دخول</button>
-                </form>
-            </div>
-
-            <!-- نموذج التسجيل -->
-            <div id="register-form" class="form-container">
-                <h2>إنشاء حساب جديد</h2>
-                <form id="register">
-                    <div class="input-group">
-                        <label>👤 الاسم الكامل</label>
-                        <input type="text" id="reg-name" required placeholder="أحمد محمد">
-                    </div>
-                    <div class="input-group">
-                        <label>📧 البريد الإلكتروني</label>
-                        <input type="email" id="reg-email" required placeholder="example@email.com">
-                    </div>
-                    <div class="input-group">
-                        <label>📱 رقم الجوال</label>
-                        <input type="tel" id="reg-phone" required placeholder="05xxxxxxxx">
-                    </div>
-                    <div class="input-group">
-                        <label>🔒 كلمة المرور</label>
-                        <input type="password" id="reg-password" required placeholder="••••••••">
-                    </div>
-                    <div class="input-group">
-                        <label>🔒 تأكيد كلمة المرور</label>
-                        <input type="password" id="reg-confirm" required placeholder="••••••••">
-                    </div>
-                    <button type="submit" class="btn-primary">إنشاء حساب</button>
-                </form>
-            </div>
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="search" id="search-input" placeholder="ابحث باسم العميل أو رقم الهاتف أو ID…" oninput="filterTable()" />
         </div>
+        <div class="search-count" id="search-count"></div>
+      </div>
 
-        <div id="message" class="message"></div>
-        <div id="loading" class="loading" style="display: none;">
-            <div class="spinner"></div>
-            <p>جاري المعالجة...</p>
+      <div class="card">
+        <div class="card-title">👥 قائمة العملاء</div>
+        <div class="table-scroll">
+          <table id="customers-table">
+            <thead>
+              <tr>
+                <th>العميل</th>
+                <th>الهاتف</th>
+                <th>الانضمام</th>
+                <th>الطلبات</th>
+                <th>الرصيد</th>
+                <th>الدور</th>
+              </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+          </table>
         </div>
+        <div class="no-results hidden" id="no-results">
+          <span class="emoji">🔎</span>
+          لا توجد نتائج مطابقة
+        </div>
+      </div>
     </div>
 
-    <script src="config.js"></script>
-    <script src="script.js"></script>
+    <!-- CUSTOMER: Profile -->
+    <div id="customer-view" class="hidden">
+      <div class="card">
+        <div class="card-title">👤 بياناتي</div>
+        <div class="profile-header">
+          <div class="profile-avatar" id="profile-avatar">–</div>
+          <div>
+            <div class="profile-name" id="profile-name">–</div>
+            <div class="profile-id" id="profile-id">–</div>
+          </div>
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">📱 الهاتف</div>
+            <div class="info-value" id="profile-phone">–</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">📧 البريد الإلكتروني</div>
+            <div class="info-value" id="profile-email">–</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">📍 العنوان</div>
+            <div class="info-value" id="profile-address">–</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">📅 تاريخ الانضمام</div>
+            <div class="info-value" id="profile-join">–</div>
+          </div>
+        </div>
+        <div class="stat-strip">
+          <div class="stat-box">
+            <div class="stat-num" id="profile-orders">0</div>
+            <div class="stat-lbl">الطلبات الكلية</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num" id="profile-balance">0</div>
+            <div class="stat-lbl">الرصيد (جنيه)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  /* ═══════════════════════════════════════════
+     DATA — في الواقع ستُحمَّل من customers.json
+     لكن في بيئة file:// نضعها inline كـ fallback
+  ═══════════════════════════════════════════ */
+  const INLINE_DATA = [
+    { id:"admin",  name:"المدير العام",         password:"admin123",   role:"admin",    phone:"01001234567", email:"admin@mashawar.eg",    address:"المحلة الكبرى - الإدارة",          joinDate:"2024-01-01", orders:0,  balance:0     },
+    { id:"c001",   name:"أحمد محمد علي",        password:"ahmed123",   role:"customer", phone:"01012345678", email:"ahmed@example.com",    address:"المحلة الكبرى - شارع الجمهورية", joinDate:"2024-03-15", orders:12, balance:150.50},
+    { id:"c002",   name:"فاطمة حسن إبراهيم",   password:"fatma123",   role:"customer", phone:"01098765432", email:"fatma@example.com",    address:"المحلة الكبرى - ميدان الساعة",   joinDate:"2024-05-20", orders:7,  balance:80.00 },
+    { id:"c003",   name:"محمود سيد عبدالله",   password:"mahmoud123", role:"customer", phone:"01156789012", email:"mahmoud@example.com",  address:"المحلة الكبرى - شارع طنطا",      joinDate:"2024-07-10", orders:25, balance:320.75},
+    { id:"c004",   name:"نور الدين أحمد",      password:"nour123",    role:"customer", phone:"01234567890", email:"nour@example.com",     address:"المحلة الكبرى - حي العمال",      joinDate:"2024-09-01", orders:3,  balance:45.25 },
+    { id:"c005",   name:"سارة عمر خالد",       password:"sara123",    role:"customer", phone:"01187654321", email:"sara@example.com",     address:"المحلة الكبرى - شارع بورسعيد",  joinDate:"2024-11-15", orders:18, balance:210.00}
+  ];
+
+  let customers = [];
+  let currentUser = null;
+
+  /* ── Load JSON (fetch → fallback to inline) ── */
+  async function loadCustomers() {
+    try {
+      const r = await fetch('customers.json');
+      if (!r.ok) throw new Error();
+      customers = await r.json();
+    } catch {
+      customers = INLINE_DATA;
+    }
+  }
+
+  /* ── Helpers ── */
+  function initials(name) {
+    return name.trim().split(' ').slice(0,2).map(w => w[0]).join('');
+  }
+
+  function formatDate(d) {
+    if (!d) return '–';
+    const [y, m, day] = d.split('-');
+    return `${day}/${m}/${y}`;
+  }
+
+  /* ── LOGIN ── */
+  async function doLogin() {
+    if (!customers.length) await loadCustomers();
+    const id   = document.getElementById('login-id').value.trim();
+    const pass = document.getElementById('login-pass').value;
+    const user = customers.find(c => c.id === id && c.password === pass);
+    const errEl = document.getElementById('login-error');
+    if (!user) {
+      errEl.style.display = 'block';
+      return;
+    }
+    errEl.style.display = 'none';
+    currentUser = user;
+    document.getElementById('login-page').classList.add('hidden');
+    document.getElementById('app-page').classList.remove('hidden');
+    document.getElementById('topbar-avatar').textContent = initials(user.name);
+    document.getElementById('topbar-name').textContent   = user.name;
+    if (user.role === 'admin') showAdmin();
+    else showCustomer(user);
+  }
+
+  /* ── Enter key support ── */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !document.getElementById('login-page').classList.contains('hidden')) doLogin();
+  });
+
+  /* ── LOGOUT ── */
+  function doLogout() {
+    currentUser = null;
+    document.getElementById('app-page').classList.add('hidden');
+    document.getElementById('login-page').classList.remove('hidden');
+    document.getElementById('login-id').value   = '';
+    document.getElementById('login-pass').value = '';
+    document.getElementById('admin-view').classList.add('hidden');
+    document.getElementById('customer-view').classList.add('hidden');
+    document.getElementById('search-input').value = '';
+  }
+
+  /* ── ADMIN VIEW ── */
+  function showAdmin() {
+    document.getElementById('admin-view').classList.remove('hidden');
+    renderTable(customers);
+    updateCount(customers.length, customers.length);
+  }
+
+  function renderTable(list) {
+    const tbody = document.getElementById('table-body');
+    const noRes = document.getElementById('no-results');
+    const table = document.getElementById('customers-table');
+    if (!list.length) {
+      tbody.innerHTML = '';
+      table.classList.add('hidden');
+      noRes.classList.remove('hidden');
+      return;
+    }
+    table.classList.remove('hidden');
+    noRes.classList.add('hidden');
+    tbody.innerHTML = list.map(c => `
+      <tr>
+        <td>
+          <div class="name-cell">
+            <div class="mini-avatar">${initials(c.name)}</div>
+            <div>
+              <div class="name-main">${c.name}</div>
+              <div class="name-sub">${c.id}</div>
+            </div>
+          </div>
+        </td>
+        <td>${c.phone}</td>
+        <td>${formatDate(c.joinDate)}</td>
+        <td>${c.orders}</td>
+        <td>${c.balance.toFixed(2)} ج</td>
+        <td><span class="role-tag ${c.role==='admin'?'role-admin':'role-customer'}">${c.role==='admin'?'أدمن':'عميل'}</span></td>
+      </tr>
+    `).join('');
+  }
+
+  function updateCount(shown, total) {
+    document.getElementById('search-count').textContent =
+      shown === total ? `إجمالي العملاء: ${total}` : `${shown} نتيجة من ${total}`;
+  }
+
+  function filterTable() {
+    const q = document.getElementById('search-input').value.trim().toLowerCase();
+    const filtered = q
+      ? customers.filter(c =>
+          c.name.toLowerCase().includes(q) ||
+          c.phone.includes(q) ||
+          c.id.toLowerCase().includes(q) ||
+          (c.email && c.email.toLowerCase().includes(q))
+        )
+      : customers;
+    renderTable(filtered);
+    updateCount(filtered.length, customers.length);
+  }
+
+  /* ── CUSTOMER VIEW ── */
+  function showCustomer(u) {
+    document.getElementById('customer-view').classList.remove('hidden');
+    document.getElementById('profile-avatar').textContent  = initials(u.name);
+    document.getElementById('profile-name').textContent    = u.name;
+    document.getElementById('profile-id').textContent      = `رقم العميل: ${u.id}`;
+    document.getElementById('profile-phone').textContent   = u.phone;
+    document.getElementById('profile-email').textContent   = u.email;
+    document.getElementById('profile-address').textContent = u.address;
+    document.getElementById('profile-join').textContent    = formatDate(u.joinDate);
+    document.getElementById('profile-orders').textContent  = u.orders;
+    document.getElementById('profile-balance').textContent = u.balance.toFixed(2);
+  }
+
+  /* ── INIT ── */
+  loadCustomers();
+</script>
 </body>
 </html>
