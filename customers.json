@@ -1,0 +1,74 @@
+[
+  {
+    "id": "admin",
+    "name": "المدير العام",
+    "password": "admin123",
+    "role": "admin",
+    "phone": "01001234567",
+    "email": "admin@mashawar.eg",
+    "address": "المحلة الكبرى - الإدارة",
+    "joinDate": "2024-01-01",
+    "orders": 0,
+    "balance": 0
+  },
+  {
+    "id": "c001",
+    "name": "أحمد محمد علي",
+    "password": "ahmed123",
+    "role": "customer",
+    "phone": "01012345678",
+    "email": "ahmed@example.com",
+    "address": "المحلة الكبرى - شارع الجمهورية",
+    "joinDate": "2024-03-15",
+    "orders": 12,
+    "balance": 150.50
+  },
+  {
+    "id": "c002",
+    "name": "فاطمة حسن إبراهيم",
+    "password": "fatma123",
+    "role": "customer",
+    "phone": "01098765432",
+    "email": "fatma@example.com",
+    "address": "المحلة الكبرى - ميدان الساعة",
+    "joinDate": "2024-05-20",
+    "orders": 7,
+    "balance": 80.00
+  },
+  {
+    "id": "c003",
+    "name": "محمود سيد عبدالله",
+    "password": "mahmoud123",
+    "role": "customer",
+    "phone": "01156789012",
+    "email": "mahmoud@example.com",
+    "address": "المحلة الكبرى - شارع طنطا",
+    "joinDate": "2024-07-10",
+    "orders": 25,
+    "balance": 320.75
+  },
+  {
+    "id": "c004",
+    "name": "نور الدين أحمد",
+    "password": "nour123",
+    "role": "customer",
+    "phone": "01234567890",
+    "email": "nour@example.com",
+    "address": "المحلة الكبرى - حي العمال",
+    "joinDate": "2024-09-01",
+    "orders": 3,
+    "balance": 45.25
+  },
+  {
+    "id": "c005",
+    "name": "سارة عمر خالد",
+    "password": "sara123",
+    "role": "customer",
+    "phone": "01187654321",
+    "email": "sara@example.com",
+    "address": "المحلة الكبرى - شارع بورسعيد",
+    "joinDate": "2024-11-15",
+    "orders": 18,
+    "balance": 210.00
+  }
+]
