@@ -3,8 +3,8 @@ const GITHUB_CONFIG = {
     // ⚠️ مهم: استبدل هذه البيانات بمعلومات حسابك
     username: 'YOUR_GITHUB_USERNAME',  // اسم المستخدم في GitHub
     repo: 'YOUR_REPO_NAME',             // اسم المستودع
-    token: 'YOUR_GITHUB_TOKEN',         // التوكن الشخصي
-    filePath: 'data/users.json'         // مسار ملف العملاء
+    token: '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',         // التوكن الشخصي
+    filePath: '/users.json'         // مسار ملف العملاء
 };
 
 // رابط API للملف
