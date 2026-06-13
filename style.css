@@ -155,6 +155,11 @@ body {
     transform: translateY(0);
 }
 
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 .message {
     margin-top: 20px;
     padding: 12px;
@@ -176,6 +181,97 @@ body {
     color: #721c24;
     border: 1px solid #f5c6cb;
     display: block;
+}
+
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.loading p {
+    color: white;
+    margin-top: 15px;
+    font-size: 1.1rem;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255,255,255,0.3);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.dashboard {
+    text-align: center;
+}
+
+.welcome-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+}
+
+.welcome-section h2 {
+    margin-bottom: 10px;
+}
+
+.user-info {
+    margin: 8px 0;
+    opacity: 0.95;
+}
+
+.dashboard-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dashboard-btn {
+    padding: 15px;
+    background: #f8f9fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.dashboard-btn:hover {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+    transform: translateX(5px);
+}
+
+.dashboard-btn.logout {
+    background: #dc3545;
+    color: white;
+    border-color: #dc3545;
+}
+
+.dashboard-btn.logout:hover {
+    background: #c82333;
+    transform: translateX(5px);
 }
 
 @media (max-width: 600px) {
